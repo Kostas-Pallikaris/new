@@ -331,14 +331,15 @@
 
 (* ::Input:: *)
 (*ReadIndices[exp_,obj_]:= Module[*)
-(*{listoflists,pos,term,IndLimits,i,TempList},*)
+(*{listoflists,pos,term,IndLimits,i,TempList,lind},*)
 (*listoflists=Splitter[exp,"FullSplit"-> True];*)
 (*pos=Position[ToExpression@listoflists,obj];*)
 (*TempList=Range[Length@pos];*)
 (*For[i=1,i<= Length@pos,i++,*)
 (*term=listoflists[[pos[[i,1]],pos[[i,2]]]];*)
 (*IndLimits=StringPosition[term,{"[","]"}];*)
-(*TempList[[i]]=StringSplit@@{StringTake[term,{IndLimits[[1,1]]+1,IndLimits[[2,1]]-1}],","};*)
+(*lind=Length@IndLimits;*)
+(*TempList[[i]]= StringSplit[StringTake[term,{IndLimits[[lind-1,1]]+1,IndLimits[[lind,1]]-1}],","];*)
 (*];*)
 (*Return@TempList;*)
 (*]*)
@@ -390,7 +391,7 @@
 (*UndefTensor[Dum]*)
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Fock-Ivanenko Covariant Derivative*)
 
 
@@ -477,7 +478,7 @@
 (*For[l=1,l<= Length@IndList[[1]]-1,l++,*)
 (*For[h=l+1,h<= Length@IndList[[1]],h++,*)
 (*If[({IndList[[j,l]],IndList[[j,h]]}==Reverse[{IndList[[k,l]],IndList[[k,h]]}]&& Abs@ToExpression@listoflists[[pos[[j,1]],1]]== Abs@ToExpression@listoflists[[pos[[k,1]],1]]),*)
-(*If[temp3==True,*)
+(*If[(temp3==True && StringFreeQ[listoflists[[pos[[j,1]],pos[[j,2]]]],"SymH"]),*)
 (*TempInd=StringJoin[{"["},Riffle@@{IndList[[j]],","},{"]"}];*)
 (*If[listoflists[[pos[[j,1]],1]]==listoflists[[pos[[k,1]],1]],*)
 (*TempTensor=ImposeSym[ToExpression@listoflists[[pos[[j,1]],pos[[j,2]]]],ToExpression[StringJoin@{"IndexList",TempInd}],Symmetric[{l,h}]],*)
@@ -517,6 +518,74 @@
 (*UndefTensor[Dum]*)
 (*UndefTensor[Dum2]*)
 (*UndefTensor[Dam]*)
+
+
+(* ::Input:: *)
+(*TorsionCD0[-\[Beta],-\[Mu],\[Alpha]]+TorsionCD0[\[Alpha],-\[Beta],-\[Mu]]//TorsionToChristoffel*)
+(*CollectSymPair[TorsionCD0[-\[Beta],-\[Mu],\[Alpha]]+TorsionCD0[\[Alpha],-\[Beta],-\[Mu]]//TorsionToChristoffel,ChristoffelCD0]*)
+
+
+(* ::Subsection::Closed:: *)
+(*Christoffel To Torsion*)
+
+
+(* ::Text:: *)
+(*Let us think of the torsion tensor*)
+
+
+(* ::Input:: *)
+(*TorsionCD0[-\[Beta],-\[Mu],\[Alpha]]+TorsionCD0[\[Alpha],-\[Beta],-\[Mu]]//TorsionToChristoffel//InputForm*)
+
+
+(* ::Text:: *)
+(*Let us write it in a denser way*)
+
+
+(* ::Input:: *)
+(*CollectSymPair[%,ChristoffelCD0]//InputForm*)
+
+
+(* ::Text:: *)
+(*We should try to make a rule, which replaces this expression with the torsion tensor. *)
+
+
+(* ::Input:: *)
+(*ChristoffelToTorsion=MakeRule[{2*SymH[{ChristoffelCD0},Antisymmetric[{2,3}],"[23]"][\[Alpha],-\[Beta],-\[Mu]],TorsionCD0[\[Alpha],-\[Beta],-\[Mu]]},MetricOn-> All,UseSymmetries-> True, ContractMetrics-> True]*)
+
+
+(* ::Text:: *)
+(*MakeRule seems incapable of accepting SymManipulator expressions as input (it only accepts them as output). Hence, we can start by building a function for this specific example. *)
+
+
+(* ::Input:: *)
+(*Clear[ChristoffelToTorsion]*)
+(*ChristoffelToTorsion[exp_,covd_]:=Module[*)
+(*{listoflists,temp,TempExp,pos,i,indices,term,IndLimits,TempList,l,final},*)
+(*listoflists=Splitter[exp,"FullSplit"-> True];*)
+(*temp=List["Christoffel"];*)
+(*temp=StringJoin[temp,ToString@covd];*)
+(*TempExp=CollectSymPair[exp,ToExpression@temp];*)
+(*listoflists=Splitter[TempExp,"FullSplit"-> True];*)
+(*pos=Position[ToExpression@listoflists,SymH];*)
+(*temp=StringJoin["Torsion",ToString@covd];*)
+(*TempList=Range[Length@pos];*)
+(*For[i=1,i<= Length@pos, i++,*)
+(*term=listoflists[[pos[[i,1]],pos[[i,2]]]];*)
+(*IndLimits=StringPosition[term,{"[","]"}];*)
+(*TempList=StringDrop[term,{IndLimits[[(Length@IndLimits-1),1]],IndLimits[[Length@IndLimits,1]]}];*)
+(*listoflists[[pos[[i,1]],pos[[i,2]]]]=StringReplace[term,TempList-> StringJoin["(1/2)",temp]];*)
+(*];*)
+(*For[l=1,l<= Length@listoflists,l++,*)
+(*listoflists[[l]]=StringJoin[Riffle@@{listoflists[[l]],"*"}];*)
+(*];*)
+(*final=ToExpression[StringReplace[StringJoin@Riffle[listoflists," + "]," + - "-> " - "]];*)
+(*Return@final;*)
+(*]*)
+
+
+(* ::Input:: *)
+(*(TorsionCD0[\[Alpha],-\[Beta],-\[Mu]]+TorsionCD0[-\[Beta],-\[Mu],\[Alpha]])//TorsionToChristoffel*)
+(*ChristoffelToTorsion[(TorsionCD0[\[Alpha],-\[Beta],-\[Mu]]+TorsionCD0[-\[Beta],-\[Mu],\[Alpha]])//TorsionToChristoffel,CD0]*)
 
 
 
