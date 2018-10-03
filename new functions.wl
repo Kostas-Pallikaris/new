@@ -446,7 +446,7 @@
 
 
 (* ::Subsection::Closed:: *)
-(*Symmetry in 2 indices - Rank 2 tensors*)
+(*Symmetry in 2 indices - Rank n tensors*)
 
 
 (* ::Input:: *)
