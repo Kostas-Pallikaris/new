@@ -8,11 +8,11 @@
 (*Quit[]*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Building the geometry*)
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Loading the packages*)
 
 
@@ -23,7 +23,7 @@
 (*<<xAct`xTras`*)
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Definitions*)
 
 
@@ -36,12 +36,12 @@
 (*DefCovD[VD0[-\[Alpha]],fake,{"|","\!\(\*OverscriptBox[\(D\), \(\[FilledSmallCircle]\)]\)"},ExtendedFrom-> CD0,Torsion-> True,Curvature-> False];*)
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Splitter*)
 
 
 (* ::Input:: *)
-(*Options[Splitter]={"FullSplit"->True,"SeparateDenominator"->False};*)
+(*Options[Splitter]={"FullSplit"->True,"SeparateDenominator"->False,"OutputToString"->False};*)
 (**)
 (*Splitter[Expr_,OptionsPattern[]]:=( *)
 (**)
@@ -296,7 +296,16 @@
 (*If[OptionValue["SeparateDenominator"]==True,*)
 (*InitialEXPList[[ele2]]={NumList,DenList},*)
 (*InitialEXPList[[ele2]]=Join[NumList,DenList];*)
-(*],*)
+(*];*)
+(**)
+(*(*This separates the minus in front of second level elements if there is no number at the front*)*)
+(*If[Characters[ToString[InitialEXPList[[ele2]][[1]]]][[1]]=="-",*)
+(*If[NumericQ[ToExpression[Characters[ToString[InitialEXPList[[ele2]][[1]]]][[2]]]]==False,*)
+(*(*Print[NumericQ[ToExpression[Characters[ToString[InitialEXPList[[ele2]][[1]]]][[2]]]]];*)
+(*Print[InitialEXPList[[ele2]][[1]]];*)*)
+(*InitialEXPList[[ele2]][[1]]=StringTrim[ToString[InitialEXPList[[ele2]][[1]]],"-"];*)
+(*InitialEXPList[[ele2]]=Prepend[InitialEXPList[[ele2]],"-1"]*)
+(*]],*)
 (**)
 (*(**)
 (*Print[InitialEXPList[[ele2]]];*)
@@ -309,14 +318,17 @@
 (*{ele2,1,Length[InitialEXPList]}];*)
 (**)
 (*(*Print[InitialEXPList];*)*)
-(*Return[InitialEXPList]*)
+(*If[OptionValue["OutputToString"]==True,*)
+(*Return[InitialEXPList],*)
+(*Return[ToExpression[InitialEXPList]]*)
+(*]*)
 (**)
 (*]*)
 (**)
 (*)*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Functions*)
 
 
@@ -440,7 +452,7 @@
 (*UndefTensor[Dum]*)
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Fock-Ivanenko Covariant Derivative*)
 
 
