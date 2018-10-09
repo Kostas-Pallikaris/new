@@ -8,11 +8,11 @@
 (*Quit[]*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Building the geometry*)
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Loading the packages*)
 
 
@@ -23,7 +23,7 @@
 (*<<xAct`xTras`*)
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Definitions*)
 
 
@@ -320,7 +320,7 @@
 (*Functions*)
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Read Indices*)
 
 
@@ -330,8 +330,29 @@
 
 
 (* ::Input:: *)
-(*ReadIndices[exp_,obj_]:= Module[*)
+(*ReadIndices[exp_,obj_,OptionsPattern[{Debug->False}]]:= Module[*)
 (*{listoflists,pos,term,IndLimits,i,TempList,lind},*)
+(*If[OptionValue[Debug]==True,*)
+(*Print[Style@@{StringForm["Debug mode ON for ReadIndices"],FontWeight-> "Bold"}];*)
+(*listoflists=Splitter[exp,"FullSplit"-> True];*)
+(*Print@StringForm["I created the list:\n``",listoflists];*)
+(*pos=Position[ToExpression@listoflists,obj];*)
+(*Print@StringForm["I found the following list of positions of ``:\n``",obj,pos];*)
+(*TempList=Range[Length@pos];*)
+(*For[i=1,i<= Length@pos,i++,*)
+(*Print@Style[StringForm["... Entering loop `` ...",i],FontColor-> Red];*)
+(*term=listoflists[[pos[[i,1]],pos[[i,2]]]];*)
+(*Print@StringForm["I am now parsing ``",term];*)
+(*IndLimits=StringPosition[term,{"[","]"}];*)
+(*lind=Length@IndLimits;*)
+(*TempList[[i]]= StringSplit[StringTake[term,{IndLimits[[lind-1,1]]+1,IndLimits[[lind,1]]-1}],","];*)
+(*Print@StringForm["Its indices are ``",TempList[[i]]];*)
+(*Print@StringForm["Completed `` of ``",i,Length@pos];*)
+(*Print@Style[StringForm["... Exiting loop `` ...",i],FontColor-> Red];*)
+(*];*)
+(*Print@"My list of relevant index lists is:";*)
+(*Return@TempList,*)
+(**)
 (*listoflists=Splitter[exp,"FullSplit"-> True];*)
 (*pos=Position[ToExpression@listoflists,obj];*)
 (*TempList=Range[Length@pos];*)
@@ -341,22 +362,48 @@
 (*lind=Length@IndLimits;*)
 (*TempList[[i]]= StringSplit[StringTake[term,{IndLimits[[lind-1,1]]+1,IndLimits[[lind,1]]-1}],","];*)
 (*];*)
-(*Return@TempList;*)
+(*Print@OptionValue[Debug];*)
+(*Return@TempList*)
+(*];*)
 (*]*)
 
 
 (* ::Input:: *)
-(*ReadIndices[VD0[-\[Nu]]@viel[a,-\[Mu]]//CovDToChristoffel,AChristoffelVD0]*)
+(*ReadIndices[VD0[-\[Nu]]@viel[a,-\[Mu]]//CovDToChristoffel,AChristoffelVD0,Debug-> True]*)
 (*ReadIndices[VD0[-\[Nu]]@viel[a,-\[Mu]]//CovDToChristoffel,ChristoffelCD0]*)
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Change Convention*)
 
 
 (* ::Input:: *)
-(*ChangeConvention[exp_,obj_]:= Module[*)
+(*ChangeConvention[exp_,obj_,OptionsPattern[Debug-> False]]:= Module[*)
 (*{listoflists,pos,term,NewTerm,IndList,TempList,final,l,j},*)
+(*	If[OptionValue[Debug]==True,*)
+(*Print[Style@@{StringForm["Debug mode ON for ChangeConvention"],FontWeight-> "Bold"}];*)
+(*listoflists=Splitter[exp,"FullSplit"-> True];*)
+(*Print@StringForm["I created the list:\n``",listoflists];*)
+(*pos=Position[ToExpression@listoflists,obj];*)
+(*	Print@StringForm["I found the following list of positions of ``:\n``",obj,pos];*)
+(*For[j=1,j<= Length[pos],j++,*)
+(*	   Print@Style[StringForm["... Entering loop `` ...",j],FontColor-> Green];*)
+(*term=ToExpression@listoflists[[pos[[j,1]],pos[[j,2]]]];*)
+(*	   Print@StringForm["I am now parsing ``",term];*)
+(*Print@StringForm["Calling ReadIndices for ``",obj];*)
+(*IndList=ReadIndices[exp,obj,Debug-> OptionValue[Debug]];*)
+(*	  Print@IndList;*)
+(*NewTerm=ReplaceIndex[Evaluate@term,{ToExpression@IndList[[j,2]]-> ToExpression@IndList[[j,3]],ToExpression@IndList[[j,3]]-> ToExpression@IndList[[j,2]]}];*)
+(*	   Print@StringForm["I will now replace `` with ``",term,NewTerm];*)
+(*listoflists[[pos[[j,1]],pos[[j,2]]]]=ToString@NewTerm;*)
+(*	   Print@Style[StringForm["... Exiting loop `` ...",j],FontColor-> Green];*)
+(*];*)
+(*For[l=1,l<= Length@listoflists,l++,*)
+(*listoflists[[l]]=StringJoin[Riffle@@{listoflists[[l]],"*"}];*)
+(*];*)
+(*final=ToExpression[StringReplace[StringJoin@Riffle[listoflists," + "]," + - "-> " - "]];*)
+(*Print@StringForm["Human, this is the updated expression:"];*)
+(*Return@final,*)
 (*listoflists=Splitter[exp,"FullSplit"-> True];*)
 (*pos=Position[ToExpression@listoflists,obj];*)
 (*For[j=1,j<= Length[pos],j++,*)
@@ -369,13 +416,15 @@
 (*listoflists[[l]]=StringJoin[Riffle@@{listoflists[[l]],"*"}];*)
 (*];*)
 (*final=ToExpression[StringReplace[StringJoin@Riffle[listoflists," + "]," + - "-> " - "]];*)
-(*Return@final;*)
+(*Return@final*)
+(*];*)
 (*]*)
 
 
 (* ::Input:: *)
 (*ChangeConvention[VD0[-\[Nu]]@viel[a,-\[Mu]]//CovDToChristoffel,AChristoffelVD0]*)
-(*ChangeConvention[%,ChristoffelCD0]*)
+(*ChangeConvention[%,ChristoffelCD0,Debug-> True]*)
+(*ChangeConvention[%,ChristoffelCD0,Debug-> False]*)
 
 
 (* ::Input:: *)
@@ -384,14 +433,14 @@
 
 (* ::Input:: *)
 (*VD0[-\[Nu]]@Dum[a,-b,-c]//CovDToChristoffel*)
-(*ChangeConvention[%,AChristoffelVD0]*)
+(*ChangeConvention[%,AChristoffelVD0,Debug-> True]*)
 
 
 (* ::Input:: *)
 (*UndefTensor[Dum]*)
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Fock-Ivanenko Covariant Derivative*)
 
 
@@ -404,9 +453,41 @@
 
 
 (* ::Input:: *)
-(*FIVDToSpinConnection[exp_,fivd_,covd_]:= Module[*)
+(*FIVDToSpinConnection[exp_,fivd_,covd_,OptionsPattern[Debug-> False]]:= Module[*)
 (*{listoflists,temp,pos,i,holder,temp2,l,final},*)
-(*     listoflists=Splitter[exp//CovDToChristoffel,"FullSplit"-> True]; *)
+(*If[OptionValue[Debug]==True,*)
+(*Print[Style@@{StringForm["Debug mode ON for FIVDToSpinConnection"],FontWeight-> "Bold"}];*)
+(*         listoflists=Splitter[exp//CovDToChristoffel,"FullSplit"-> True]; *)
+(*Print@StringForm["I created the list:\n``",listoflists];*)
+(*temp=List["Christoffel"];*)
+(*temp=StringJoin[temp,ToString@fivd];*)
+(*Print@StringForm["The pulled-back connection coefficient for `` is ``",fivd,temp];*)
+(*pos=Position[ToExpression@listoflists,ToExpression@temp];*)
+(*Print@StringForm["I found the following list of positions of ``:\n``",temp,pos];*)
+(*Print@StringForm["The Fock-Ivanenko covariant derivative acts only on bundle indices. Thus, I am:"];*)
+(*For[i=1,i<=Length@pos,i++,*)
+(*Print@StringForm["``. Setting `` equal to 0",i,ToExpression@listoflists[[pos[[i,1]],pos[[i,2]]]]];*)
+(*listoflists[[pos[[i,1]],pos[[i,2]]]]="0";*)
+(*];*)
+(*temp=List["AChristoffel"];*)
+(*temp=StringJoin[temp,ToString@fivd];*)
+(*Print@StringForm["The connection coefficient for `` is ``",fivd,temp];*)
+(*temp2=StringJoin[List["AChristoffel"],ToString@covd];*)
+(*pos=Position[ToExpression@listoflists,ToExpression@temp];*)
+(*Print@StringForm["I found the following list of positions of ``:\n``",temp,pos];*)
+(*Print@StringForm["The Fock-Ivanenko covariant derivative associates with ``. Thus, I am:",temp2];*)
+(*For[i=1,i<=Length@pos,i++,*)
+(*holder=listoflists[[pos[[i,1]],pos[[i,2]]]];*)
+(*listoflists[[pos[[i,1]],pos[[i,2]]]]=StringReplace[holder, temp-> temp2];*)
+(*Print@StringForm["``. Replacing `` with ``",i,ToExpression@holder,ToExpression@listoflists[[pos[[i,1]],pos[[i,2]]]]];*)
+(*];*)
+(*For[l=1,l<= Length@listoflists,l++,*)
+(*listoflists[[l]]=StringJoin[Riffle@@{listoflists[[l]],"*"}];*)
+(*];*)
+(*final=ToExpression[StringReplace[StringJoin@Riffle[listoflists," + "]," + - "-> " - "]];*)
+(*Print@StringForm["I am changing convention now!"];*)
+(*Return@ChangeConvention[final,ToExpression@temp2,Debug-> OptionValue[Debug]],*)
+(*listoflists=Splitter[exp//CovDToChristoffel,"FullSplit"-> True]; *)
 (*temp=List["Christoffel"];*)
 (*temp=StringJoin[temp,ToString@fivd];*)
 (*pos=Position[ToExpression@listoflists,ToExpression@temp];*)
@@ -425,7 +506,8 @@
 (*listoflists[[l]]=StringJoin[Riffle@@{listoflists[[l]],"*"}];*)
 (*];*)
 (*final=ToExpression[StringReplace[StringJoin@Riffle[listoflists," + "]," + - "-> " - "]];*)
-(*Return@ChangeConvention[final,ToExpression@temp2];*)
+(*Return@ChangeConvention[final,ToExpression@temp2]*)
+(*];*)
 (*]*)
 
 
@@ -438,7 +520,7 @@
 (*FIVD0[-\[Alpha]][Dum[a,b,-\[Nu]]]*)
 (*FIVDToSpinConnection[%,FIVD0,VD0]*)
 (*FIVD0[-\[Alpha]][Dum[a,b,-\[Nu]]]Dum2[-b,-c,-\[Rho]]+FIVD0[-\[Alpha]][Dum2[b,a,-\[Nu]]]Dum[-c,-b,-\[Rho]]*)
-(*FIVDToSpinConnection[%,FIVD0,VD0]*)
+(*FIVDToSpinConnection[%,FIVD0,VD0,Debug-> True]*)
 
 
 (* ::Input:: *)
@@ -446,13 +528,62 @@
 (*UndefTensor[Dum2]*)
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Symmetry in 2 indices - Rank n tensors*)
 
 
 (* ::Input:: *)
-(*CollectSymPair[exp_,obj_]:=Module[*)
+(*CollectSymPair[exp_,obj_,OptionsPattern[Debug-> False]]:=Module[*)
 (*{listoflists,IndList,pos,temp,i,j,k,TempTensor,TempInd,final,l,h,temp2,temp3},*)
+(*If[OptionValue[Debug]==True,*)
+(*Print[Style@@{StringForm["Debug mode ON for CollectSymPair"],FontWeight-> "Bold"}];*)
+(*listoflists=Splitter[exp,"FullSplit"-> True];*)
+(*Print@StringForm["I created the list:\n``",listoflists];*)
+(*pos=Position[ToExpression@listoflists,obj];*)
+(*Print@StringForm["I found the following list of positions of ``:\n``",obj,pos];*)
+(*temp=Range[Length@pos];*)
+(*For[i=1,i<= Length@pos,i++,*)
+(*If[NumericQ[ToExpression@First@listoflists[[pos[[i,1]]]]]==False,*)
+(*If[First@Characters@listoflists[[pos[[i,1]],1]]== "-",*)
+(*temp[[i]]="-1";*)
+(*listoflists[[pos[[i,1]],1]]=StringTrim[listoflists[[pos[[i,1]],1]],"-"];*)
+(*listoflists[[pos[[i,1]]]]=Prepend[listoflists[[pos[[i,1]]]],temp[[i]]]*)
+(*,*)
+(*temp[[i]]="1";*)
+(*listoflists[[pos[[i,1]]]]=Prepend[listoflists[[pos[[i,1]]]],temp[[i]]]*)
+(*];*)
+(*];*)
+(*];*)
+(*IndList=ReadIndices[exp,obj];*)
+(*pos=Position[ToExpression@listoflists,obj];*)
+(*(*Rank n tensors*)*)
+(*For[j=1,j<= Length@IndList,j++,*)
+(*For[k=j+1,k<=Length@IndList,k++,*)
+(*temp2=Delete[listoflists,{{pos[[j,1]],1},{pos[[k,1]],1},{pos[[j,1]],pos[[j,2]]},{pos[[k,1]],pos[[k,2]]}}];*)
+(*temp3=(temp2[[pos[[j,1]]]]== temp2[[pos[[k,1]]]]);*)
+(*For[l=1,l<= Length@IndList[[1]]-1,l++,*)
+(*For[h=l+1,h<= Length@IndList[[1]],h++,*)
+(*If[({IndList[[j,l]],IndList[[j,h]]}==Reverse[{IndList[[k,l]],IndList[[k,h]]}]&& Abs@ToExpression@listoflists[[pos[[j,1]],1]]== Abs@ToExpression@listoflists[[pos[[k,1]],1]]),*)
+(*If[(temp3==True && StringFreeQ[listoflists[[pos[[j,1]],pos[[j,2]]]],"SymH"]),*)
+(*TempInd=StringJoin[{"["},Riffle@@{IndList[[j]],","},{"]"}];*)
+(*If[listoflists[[pos[[j,1]],1]]==listoflists[[pos[[k,1]],1]],*)
+(*TempTensor=ImposeSym[ToExpression@listoflists[[pos[[j,1]],pos[[j,2]]]],ToExpression[StringJoin@{"IndexList",TempInd}],Symmetric[{l,h}]],*)
+(*TempTensor=ImposeSym[ToExpression@listoflists[[pos[[j,1]],pos[[j,2]]]],ToExpression@StringJoin@{"IndexList",TempInd},Antisymmetric[{l,h}]];*)
+(*];*)
+(*listoflists[[pos[[k,1]],pos[[k,2]]]]="0";*)
+(*listoflists[[pos[[j,1]],pos[[j,2]]]]=ToString[2*TempTensor,InputForm];*)
+(*IndList[[k]]=Range[Length@IndList[[k]]];*)
+(*];*)
+(*];*)
+(*];*)
+(*];*)
+(*];*)
+(*];*)
+(*For[l=1,l<= Length@listoflists,l++,*)
+(*listoflists[[l]]=StringJoin[Riffle@@{listoflists[[l]],"*"}];*)
+(*];*)
+(*final=ToExpression[StringReplace[StringJoin@Riffle[listoflists," + "]," + - "-> " - "]];*)
+(*Return@final,*)
 (*listoflists=Splitter[exp,"FullSplit"-> True];*)
 (*pos=Position[ToExpression@listoflists,obj];*)
 (*temp=Range[Length@pos];*)
@@ -498,6 +629,7 @@
 (*];*)
 (*final=ToExpression[StringReplace[StringJoin@Riffle[listoflists," + "]," + - "-> " - "]];*)
 (*Return@final;*)
+(*];*)
 (*]*)
 
 
@@ -523,6 +655,10 @@
 (* ::Input:: *)
 (*TorsionCD0[-\[Beta],-\[Mu],\[Alpha]]+TorsionCD0[\[Alpha],-\[Beta],-\[Mu]]//TorsionToChristoffel*)
 (*CollectSymPair[TorsionCD0[-\[Beta],-\[Mu],\[Alpha]]+TorsionCD0[\[Alpha],-\[Beta],-\[Mu]]//TorsionToChristoffel,ChristoffelCD0]*)
+
+
+(* ::Input:: *)
+(*Head@SymH[{ChristoffelCD0},Antisymmetric[{2,3}],"[23]"][\[Alpha],-\[Beta],-\[Mu]]*)
 
 
 (* ::Subsection::Closed:: *)
@@ -584,8 +720,110 @@
 
 
 (* ::Input:: *)
-(*(TorsionCD0[\[Alpha],-\[Beta],-\[Mu]]+TorsionCD0[-\[Beta],-\[Mu],\[Alpha]])//TorsionToChristoffel*)
+(*(TorsionCD0[\[Alpha],-\[Beta],-\[Mu]]-TorsionCD0[-\[Beta],-\[Mu],\[Alpha]])//TorsionToChristoffel*)
 (*ChristoffelToTorsion[(TorsionCD0[\[Alpha],-\[Beta],-\[Mu]]+TorsionCD0[-\[Beta],-\[Mu],\[Alpha]])//TorsionToChristoffel,CD0]*)
 
 
+(* ::Subsection:: *)
+(*The New Make Rule*)
 
+
+(* ::Text:: *)
+(*This should be implemented in Splitter*)
+
+
+(* ::Input:: *)
+(*SplitterPart[exp_]:=Module[*)
+(*{listoflists,IndList,pos,temp,i,j,k,TempTensor,TempInd,final,l,h,temp2,temp3},*)
+(*listoflists=Splitter[exp,"FullSplit"-> True];*)
+(*temp=Range[Length@listoflists];*)
+(*For[i=1,i<= Length@listoflists,i++,*)
+(*If[NumericQ[ToExpression@First@listoflists[[i]]]==False,*)
+(*If[First@Characters@listoflists[[i,1]]== "-",*)
+(*temp[[i]]="-1";*)
+(*listoflists[[i,1]]=StringTrim[listoflists[[i,1]],"-"];*)
+(*listoflists[[i]]=Prepend[listoflists[[i]],temp[[i]]]*)
+(*,*)
+(*temp[[i]]="1";*)
+(*listoflists[[i]]=Prepend[listoflists[[i]],temp[[i]]]*)
+(*];*)
+(*];*)
+(*];*)
+(*Return@listoflists;*)
+(*]*)
+
+
+(* ::Input:: *)
+(*SplitterPart[Coeff[a,-b,-c]+2SymH[{AChristoffelVD0},Antisymmetric[{2,3}],"[23]"][a,-c,-b]+Coeff[-b,a,-c]]*)
+
+
+(* ::Text:: *)
+(*This is an improvement of the MakeRule command. Its only purpose is to accept strictly one SymH object as inbound Rule. *)
+
+
+(* ::Input:: *)
+(*NewMakeRule[exp_,RuleIn_,RuleOut_]:= Module[*)
+(*{listoflists,pos,temp,term,NewTensor,indices,i,temp2,l,final,TheRule,temp3},*)
+(*listoflists=SplitterPart[exp];*)
+(*Print@listoflists;*)
+(*term=SplitterPart[RuleIn];*)
+(*pos=Position[ToExpression@term,SymH];*)
+(*Print@term;*)
+(*Print@pos;*)
+(*temp=Head@ToExpression@term[[1,pos[[1,2]]]];*)
+(*Print@temp;*)
+(*indices=ReadIndices[ToExpression@term[[1,pos[[1,2]]]],temp];*)
+(*Print@indices;*)
+(*indices=StringReplace[ToString@indices[[1]],{"{"-> "[","}"-> "]"," "-> ""}];*)
+(*Print@StringLength@indices;*)
+(*Print@indices;*)
+(*NewTensor=StringJoin["Sym",ToString@temp[[1,1]],indices];*)
+(*Print@NewTensor;*)
+(*If[MemberQ[VisitorsOf[DependenciesOfTensor[temp][[1]]],ToExpression@StringJoin["Sym",ToString@temp[[1,1]]]]==False,*)
+(*DefTensor[ToExpression@NewTensor,DependenciesOfTensor[temp],temp[[2]]];*)
+(*];*)
+(*Print@ToExpression@NewTensor;*)
+(*temp2=StringDrop[term[[1,pos[[1,2]]]],-StringLength@indices];*)
+(*Print@temp2;*)
+(*Print@IndicesOf[ToExpression@StringJoin["Sym",ToString@temp[[1,1]]]][ToExpression@NewTensor];*)
+(*pos=Position[ToExpression@listoflists,ToExpression@temp2];*)
+(*Print@pos;*)
+(*Print@listoflists[[pos[[1,1]],pos[[1,2]]]];*)
+(*For[i=1,i<= Length@pos,i++,*)
+(*listoflists[[pos[[i,1]],pos[[i,2]]]]=StringReplace[listoflists[[pos[[i,1]],pos[[i,2]]]],temp2-> StringJoin["Sym",ToString@temp[[1,1]]]];*)
+(*];*)
+(*Print@listoflists;*)
+(*For[l=1,l<= Length@listoflists,l++,*)
+(*listoflists[[l]]=StringJoin[Riffle@@{listoflists[[l]],"*"}];*)
+(*];*)
+(*Print@listoflists;*)
+(*final=ToExpression[StringReplace[StringJoin@Riffle[listoflists," + "]," + - "-> " - "]];*)
+(*Print@final;*)
+(*temp3=ToExpression@NewTensor;*)
+(*Print@temp3;*)
+(*TheRule=MakeRule[{Evaluate@temp3,RuleOut},MetricOn-> All,UseSymmetries-> True,ContractMetrics-> True];*)
+(*Print@TheRule;*)
+(*final=final/.TheRule;*)
+(*Return@final;*)
+(*]*)
+
+
+(* ::Input:: *)
+(*DefTensor[Coeff[a,-b,-c],fake,Antisymmetric[{2,3}],PrintAs-> "C"]*)
+
+
+(* ::Input:: *)
+(*Coeff[a,-b,-c]+2SymH[{AChristoffelVD0},Antisymmetric[{2,3}],"[23]"][a,-c,-b]-SymH[{AChristoffelVD0},Antisymmetric[{1,2}],"[12]"][-c,a,-b]-SymH[{AChristoffelVD0},Antisymmetric[{2,3}],"[23]"][-c,a,-b]+Coeff[-b,a,-c]*)
+(*NewMakeRule[%,SymH[{AChristoffelVD0},Antisymmetric[{2,3}],"[23]"][-c,a,-b],(1/2)TorsionVD0[-c,-b,a]-(1/2)Coeff[-c,-b,a]]*)
+
+
+(* ::Input:: *)
+(*check=MakeRule[{SymAChristoffelVD0[a,-b,-c],(1/2)*TorsionVD0[a,-c,-b]-(1/2)*Coeff[a,-c,-b]},UseSymmetries-> True, MetricOn-> All, ContractMetrics-> True]*)
+
+
+(* ::Input:: *)
+(*Coeff[a, -b, -c]+Coeff[-b, a, -c]+2 SymAChristoffelVD0[a, -c, -b]-SymAChristoffelVD0[-c, a, -b]-xAct`SymManipulator`SymH[{AChristoffelVD0}, Antisymmetric[{1, 2}], "[12]"][-c, a, -b]/.check*)
+
+
+(* ::Input:: *)
+(*Clear[check]*)
